@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
@@ -12,8 +13,17 @@ type SimpleChaincode struct {
 }
 
 type exchangeWR struct {
-	ObjectType string `json:"doctype"`
-	User       string `json:"user"`
+	ObjectType    string  `json:"doctype"`
+	User          string  `json:"user"`
+	OriginalWR    int     `json:"originalwr"`
+	VariableWR    int     `json:"variablewr"`
+	FlagOfBS      int     `json:"flagofbs"`
+	TransVolume   int     `json:"transvolume"`
+	TransPrice    float64 `json:"transprice"`
+	TransDeadLine int     `json:"transdeadline"`
+	TransType     int     `json:"transtype"`
+	BuyAddUp      int     `json:"buyaddup"`
+	SellAddUp     int     `json:"selladdup"`
 }
 
 // =============================
@@ -48,22 +58,84 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var err error
 
-	//   0       1       2     3
-	// "asdf", "blue", "35", "bob"
-	if len(args) != 1 {
-		return shim.Error("Incorrect number of arguments. Expecting 4")
+	//   0       1       2      3     4         5           6     7     8      9
+	// "asdf",  "1" ,   "2" ,  "3",  "4",  "0.3212310",    "6",  "7" , "8" ,  "9"
+	if len(args) != 10 {
+		return shim.Error("Incorrect number of arguments. Expecting 11")
 	}
-
-	// ==== Input sanitation ====
+	// ==== Input  ====
 	fmt.Println("- start init ")
 	if len(args[0]) <= 0 {
 		return shim.Error("1st argument must be a non-empty string")
 	}
+	if len(args[1]) <= 0 {
+		return shim.Error("2nd argument must be int")
+	}
+	if len(args[2]) <= 0 {
+		return shim.Error("3rd argument must be int")
+	}
+	if len(args[3]) <= 0 {
+		return shim.Error("4th argument must be int")
+	}
+	if len(args[4]) <= 0 {
+		return shim.Error("5rd argument must be int")
+	}
+	if len(args[5]) <= 0 {
+		return shim.Error("6th argument must be float64")
+	}
+	if len(args[6]) <= 0 {
+		return shim.Error("7nd argument must be int")
+	}
+	if len(args[7]) <= 0 {
+		return shim.Error("8rd argument must be int")
+	}
+	if len(args[8]) <= 0 {
+		return shim.Error("9th argument must be int")
+	}
+	if len(args[9]) <= 0 {
+		return shim.Error("10rd argument must be int")
+	}
 
 	user := args[0]
+	originalwr, err := strconv.Atoi(args[1])
+	if err != nil {
+		return shim.Error("2rd argument must be a numeric string")
+	}
+	variablewr, err := strconv.Atoi(args[2])
+	if err != nil {
+		return shim.Error("3rd argument must be a numeric string")
+	}
+	flagofbs, err := strconv.Atoi(args[3])
+	if err != nil {
+		return shim.Error("4rd argument must be a numeric string")
+	}
+	transvolume, err := strconv.Atoi(args[4])
+	if err != nil {
+		return shim.Error("5rd argument must be a numeric string")
+	}
+	transprice, err := strconv.ParseFloat(args[5], 64)
+	if err != nil {
+		return shim.Error("6rd argument must be a numeric(float64) string")
+	}
+	transdeadline, err := strconv.Atoi(args[6])
+	if err != nil {
+		return shim.Error("7rd argument must be a numeric string")
+	}
+	transtype, err := strconv.Atoi(args[7])
+	if err != nil {
+		return shim.Error("8rd argument must be a numeric string")
+	}
+	buyaddup, err := strconv.Atoi(args[8])
+	if err != nil {
+		return shim.Error("9rd argument must be a numeric string")
+	}
+	selladdup, err := strconv.Atoi(args[9])
+	if err != nil {
+		return shim.Error("10rd argument must be a numeric string")
+	}
 
 	objectType := "exchangeWR"
-	exchangeWR := &exchangeWR{objectType, user}
+	exchangeWR := &exchangeWR{objectType, user, originalwr, variablewr, flagofbs, transvolume, transprice, transdeadline, transtype, buyaddup, selladdup}
 	exchangeWRJSONasBytes, err := json.Marshal(exchangeWR)
 	if err != nil {
 		return shim.Error(err.Error())
@@ -74,7 +146,7 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 		return shim.Error(err.Error())
 	}
 
-	// ==== Marble saved and indexed. Return success ====
+	// Return success ====
 	fmt.Println("- end init marble")
 	return shim.Success(nil)
 }

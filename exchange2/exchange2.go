@@ -47,8 +47,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// Handle different functions
 	if function == "listingTrans" {
 		return t.listingTrans(stub, args)
-	} else if function == "queryTrans" {
-		return t.queryTrans(stub, args)
+	} else if function == "query" {
+		return t.query(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -138,7 +138,7 @@ func (t *SimpleChaincode) listingTrans(stub shim.ChaincodeStubInterface, args []
 	return shim.Success(nil)
 }
 
-func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var username, jsonResp string
 	var err error
 

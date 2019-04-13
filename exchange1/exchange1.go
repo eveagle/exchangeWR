@@ -13,10 +13,10 @@ type SimpleChaincode struct {
 }
 
 type exchangeWR struct {
-	ObjectType    string  `json:"doctype"`
-	User          string  `json:"user"`
-	OriginalWR    int     `json:"originalwr"`
-	VariableWR    int     `json:"variablewr"`
+	ObjectType string `json:"doctype"`
+	User       string `json:"user"`
+	OriginalWR int    `json:"originalwr"`
+	VariableWR int    `json:"variablewr"`
 }
 
 // =============================
@@ -42,8 +42,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// Handle different functions
 	if function == "initExchange" {
 		return t.initExchange(stub, args)
-	} else if function == "queryTrans" {
-		return t.queryTrans(stub, args)
+	} else if function == "query" {
+		return t.query(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -54,7 +54,7 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 
 	var err error
 
-	//   0       1       2      3     
+	//   0       1       2      3
 	// "asdf",  "1" ,   "2" ,  "3"
 	if len(args) != 3 {
 		return shim.Error("Incorrect number of arguments. Expecting 3")
@@ -70,7 +70,7 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 	if len(args[2]) <= 0 {
 		return shim.Error("3rd argument must be int")
 	}
-	
+
 	user := args[0]
 	originalwr, err := strconv.Atoi(args[1])
 	if err != nil {
@@ -80,7 +80,7 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 	if err != nil {
 		return shim.Error("3rd argument must be a numeric string")
 	}
-	
+
 	objectType := "exchangeWR"
 	exchangeWR := &exchangeWR{objectType, user, originalwr, variablewr}
 	exchangeWRJSONasBytes, err := json.Marshal(exchangeWR)
@@ -98,7 +98,7 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 	return shim.Success(nil)
 }
 
-func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var username, jsonResp string
 	var err error
 
@@ -119,4 +119,3 @@ func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []st
 
 	return shim.Success(valAsbytes)
 }
-

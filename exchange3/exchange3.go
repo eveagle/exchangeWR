@@ -49,11 +49,11 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// Handle different functions
 	//if function == "applyForTrans" {
 	//	return t.applyForTrans(stub, args)
-	//} else 
+	//} else
 	if function == "agreeTrans" {
 		return t.agreeTrans(stub, args)
-	} else if function == "queryTrans()" {
-		return t.queryTrans(stub, args)
+	} else if function == "query" {
+		return t.query(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -157,7 +157,7 @@ func (t *SimpleChaincode) agreeTrans(stub shim.ChaincodeStubInterface, args []st
 	return shim.Success(nil)
 }
 
-func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+func (t *SimpleChaincode) query(stub shim.ChaincodeStubInterface, args []string) pb.Response {
 	var username, jsonResp string
 	var err error
 
@@ -178,5 +178,3 @@ func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []st
 
 	return shim.Success(valAsbytes)
 }
-
-

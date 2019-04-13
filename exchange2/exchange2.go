@@ -45,8 +45,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "listingTrans()" {
-		return t.listingTrans()(stub, args)
+	if function == "listingTrans" {
+		return t.listingTrans(stub, args)
 	} else if function == "queryTrans" {
 		return t.queryTrans(stub, args)
 	}
@@ -59,8 +59,8 @@ func (t *SimpleChaincode) listingTrans(stub shim.ChaincodeStubInterface, args []
 
 	var err error
 
-	//   0       1       2      3     4         5           6     7     
-	// "asdf",  "1" ,   "2" ,  "3",  "4",  "0.3212310",    "6",  "7" 
+	//   0       1       2      3     4         5           6     7
+	// "asdf",  "1" ,   "2" ,  "3",  "4",  "0.3212310",    "6",  "7"
 	if len(args) != 8 {
 		return shim.Error("Incorrect number of arguments. Expecting 8")
 	}
@@ -159,5 +159,3 @@ func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []st
 
 	return shim.Success(valAsbytes)
 }
-
-

@@ -49,6 +49,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 	// Handle different functions
 	if function == "initExchange" { //create a new marble
 		return t.initExchange(stub, args)
+	} else if function == "queryTrans" {
+		return t.queryTrans(stub, args)
+	} else if function == "listingTrans()" {
+		return t.listingTrans(stub, args)
 	}
 
 	fmt.Println("invoke did not find func: " + function) //error
@@ -56,6 +60,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) pb.Response {
 }
 
 func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
 	var err error
 
 	//   0       1       2      3     4         5           6     7     8      9
@@ -149,4 +154,29 @@ func (t *SimpleChaincode) initExchange(stub shim.ChaincodeStubInterface, args []
 	// Return success ====
 	fmt.Println("- end init marble")
 	return shim.Success(nil)
+}
+
+func (t *SimpleChaincode) queryTrans(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+	var name, jsonResp string
+	var err error
+
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting name query")
+	}
+
+	name = args[0]
+	valAsbytes, err := stub.GetState(name)
+	if err != nil {
+		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
+		return shim.Error(jsonResp)
+	} else if valAsbytes == nil {
+		jsonResp = "{\"Error\":\"Marble does not exist: " + name + "\"}"
+		return shim.Error(jsonResp)
+	}
+
+	return shim.Success(valAsbytes)
+}
+
+func (t *SimpleChaincode) listingTrans(stub shim.ChaincodeStubInterface, args []string) pb.Response {
+
 }
